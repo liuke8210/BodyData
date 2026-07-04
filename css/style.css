@@ -1,0 +1,42 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.nav-link.active,
+.mobile-nav.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.chart-frame {
+  height: 320px;
+  min-height: 320px;
+}
+
+.chat-bubble-user {
+  margin-left: auto;
+  max-width: 84%;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 10px 12px;
+}
+
+.chat-bubble-ai {
+  max-width: 84%;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 10px 12px;
+}
+
+@media (max-width: 767px) {
+  .chart-frame {
+    height: 280px;
+    min-height: 280px;
+  }
+}
