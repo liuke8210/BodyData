@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="健康看板">
+  <rect width="512" height="512" rx="112" fill="#2563eb"/>
+  <rect x="112" y="128" width="288" height="256" rx="32" fill="#ffffff"/>
+  <path d="M152 296h56l32-80 48 120 32-72h40" fill="none" stroke="#2563eb" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="176" cy="176" r="18" fill="#0f172a"/>
+  <circle cx="232" cy="176" r="18" fill="#0f172a"/>
+  <circle cx="288" cy="176" r="18" fill="#0f172a"/>
+</svg>

@@ -62,8 +62,10 @@
       const input = document.getElementById("quickTodo");
       const content = input.value.trim();
       if (!content) return;
-      await submitApiAction(HealthApi.ACTIONS.createTodo, { content, status: "undone" }, "待辦已新增");
-      input.value = "";
+      const didSave = await submitApiAction(HealthApi.ACTIONS.createTodo, { content, status: "undone" }, "待辦已新增", event.submitter);
+      if (didSave) {
+        input.value = "";
+      }
     });
 
     document.getElementById("bloodToggle").addEventListener("change", (event) => {
@@ -76,33 +78,62 @@
     document.getElementById("dailyLogForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const payload = HealthApi.buildDailyLogPayload(event.currentTarget);
-      await submitApiAction(HealthApi.ACTIONS.createDailyLog, payload, "每日紀錄已儲存");
-      event.currentTarget.reset();
+      const didSave = await submitApiAction(HealthApi.ACTIONS.createDailyLog, payload, "每日紀錄已新增到 Google Sheet", event.submitter);
+      if (didSave) {
+        event.currentTarget.reset();
+      }
     });
 
     document.getElementById("bloodReportForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const payload = HealthApi.buildBloodReportPayload(event.currentTarget);
-      await submitApiAction(HealthApi.ACTIONS.createBloodReport, payload, "血液報告已儲存");
-      event.currentTarget.reset();
-      document.getElementById("bloodToggle").checked = false;
-      document.getElementById("bloodToggle").dispatchEvent(new Event("change"));
+      const didSave = await submitApiAction(HealthApi.ACTIONS.createBloodReport, payload, "血液報告已新增到 Google Sheet", event.submitter);
+      if (didSave) {
+        event.currentTarget.reset();
+        document.getElementById("bloodToggle").checked = false;
+        document.getElementById("bloodToggle").dispatchEvent(new Event("change"));
+      }
     });
   }
 
-  async function submitApiAction(action, payload, successMessage) {
+  async function submitApiAction(action, payload, successMessage, submitButton) {
     if (!HealthApi.hasGasUrl()) {
       showToast("請先在設定頁填入 GAS API URL");
-      return;
+      return false;
     }
 
+    if (submitButton && submitButton.disabled) {
+      return false;
+    }
+
+    setSubmitButtonLoading(submitButton, true);
     try {
       await HealthApi.request(action, payload);
       showToast(successMessage);
       await refreshIfAvailable();
+      return true;
     } catch (error) {
       showToast(error.message || "API 執行失敗");
+      return false;
+    } finally {
+      setSubmitButtonLoading(submitButton, false);
     }
+  }
+
+  function setSubmitButtonLoading(button, isLoading) {
+    if (!button) return;
+    if (isLoading) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = "儲存中...";
+      button.disabled = true;
+      button.classList.add("cursor-not-allowed", "opacity-70");
+      return;
+    }
+
+    button.textContent = button.dataset.originalText || button.textContent;
+    button.disabled = false;
+    button.classList.remove("cursor-not-allowed", "opacity-70");
+    delete button.dataset.originalText;
   }
 
   async function refreshIfAvailable() {

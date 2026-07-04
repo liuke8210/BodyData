@@ -1,0 +1,19 @@
+{
+  "name": "個人健康數據看板",
+  "short_name": "健康看板",
+  "description": "記錄與視覺化個人健康數值的行動優先看板。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

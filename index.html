@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="健康看板">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>個人健康數據看板</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="bg-slate-50 text-slate-900">
   <div class="min-h-screen md:pl-56">
-    <aside class="fixed left-0 top-0 z-20 hidden h-screen w-56 flex-col border-r border-slate-200 bg-white px-3 py-4 md:flex">
+    <aside
+      class="fixed left-0 top-0 z-20 hidden h-screen w-56 flex-col border-r border-slate-200 bg-white px-3 py-4 md:flex">
       <nav class="space-y-1" aria-label="主要導覽">
-        <button class="nav-link active w-full rounded-md px-3 py-2 text-left text-sm font-medium" data-view="dashboard" type="button">首頁</button>
-        <button class="nav-link w-full rounded-md px-3 py-2 text-left text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900" data-view="logs" type="button">紀錄</button>
-        <button class="nav-link w-full rounded-md px-3 py-2 text-left text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900" data-view="settings" type="button">設定</button>
+        <button class="nav-link active w-full rounded-md px-3 py-2 text-left text-sm font-medium" data-view="dashboard"
+          type="button">首頁</button>
+        <button
+          class="nav-link w-full rounded-md px-3 py-2 text-left text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+          data-view="logs" type="button">紀錄</button>
+        <button
+          class="nav-link w-full rounded-md px-3 py-2 text-left text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+          data-view="settings" type="button">設定</button>
       </nav>
     </aside>
 
@@ -66,8 +81,12 @@
           <article class="col-span-3 rounded-lg border border-slate-200 bg-white p-4 md:col-span-1">
             <label for="quickTodo" class="text-xs font-medium text-slate-500">新增待辦</label>
             <form id="quickTodoForm" class="mt-2 flex gap-2">
-              <input id="quickTodo" class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" type="text" placeholder="輸入要追蹤的事項">
-              <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="submit">新增</button>
+              <input id="quickTodo"
+                class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                type="text" placeholder="輸入要追蹤的事項">
+              <button
+                class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                type="submit">新增</button>
             </form>
           </article>
         </section>
@@ -81,10 +100,13 @@
               </div>
               <label class="block">
                 <span class="sr-only">選擇圖表指標</span>
-                <select id="metricSelect" class="w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 sm:w-56"></select>
+                <select id="metricSelect"
+                  class="w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 sm:w-56"></select>
               </label>
             </div>
-            <div id="chartEmptyState" class="hidden rounded-md border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">尚無可用的趨勢資料</div>
+            <div id="chartEmptyState"
+              class="hidden rounded-md border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">
+              尚無可用的趨勢資料</div>
             <div id="chartFrame" class="chart-frame">
               <canvas id="trendChart" aria-label="歷史趨勢圖"></canvas>
             </div>
@@ -97,7 +119,8 @@
                 <span id="todoCount" class="text-xs text-slate-500">0 undone</span>
               </div>
               <ul id="todoList" class="space-y-2"></ul>
-              <p id="todoEmptyState" class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無待辦事項</p>
+              <p id="todoEmptyState"
+                class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無待辦事項</p>
             </section>
 
             <section class="rounded-lg border border-slate-200 bg-white p-4">
@@ -106,7 +129,8 @@
                 <span class="text-xs text-slate-500">Schedule</span>
               </div>
               <div id="scheduleList" class="space-y-3"></div>
-              <p id="scheduleEmptyState" class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無行程資料</p>
+              <p id="scheduleEmptyState"
+                class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無行程資料</p>
             </section>
           </div>
         </div>
@@ -119,28 +143,40 @@
             <div class="mt-4 grid grid-cols-2 gap-3">
               <label class="block">
                 <span class="text-sm font-medium text-slate-500">日期</span>
-                <input class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" name="date" type="date">
+                <input
+                  class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                  name="date" type="date">
               </label>
               <label class="block">
                 <span class="text-sm font-medium text-slate-500">體重</span>
-                <input class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" name="weight" type="number" step="0.1" placeholder="kg">
+                <input
+                  class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                  name="weight" type="number" step="0.1" placeholder="kg">
               </label>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-3">
               <label class="block">
                 <span class="text-sm font-medium text-slate-500">收縮壓</span>
-                <input class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" name="bpSystolic" type="number" placeholder="mmHg">
+                <input
+                  class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                  name="bpSystolic" type="number" placeholder="mmHg">
               </label>
               <label class="block">
                 <span class="text-sm font-medium text-slate-500">舒張壓</span>
-                <input class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" name="bpDiastolic" type="number" placeholder="mmHg">
+                <input
+                  class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                  name="bpDiastolic" type="number" placeholder="mmHg">
               </label>
             </div>
             <label class="mt-3 block">
               <span class="text-sm font-medium text-slate-500">備註</span>
-              <textarea class="mt-1 w-full resize-none rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" name="notes" rows="4" placeholder="記錄當日狀態或補充事項"></textarea>
+              <textarea
+                class="mt-1 w-full resize-none rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                name="notes" rows="4" placeholder="記錄當日狀態或補充事項"></textarea>
             </label>
-            <button class="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="submit">儲存每日紀錄</button>
+            <button
+              class="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+              type="submit">儲存每日紀錄</button>
           </form>
 
           <form id="bloodReportForm" class="rounded-lg border border-slate-200 bg-white p-4">
@@ -151,12 +187,16 @@
               </div>
               <label class="inline-flex cursor-pointer items-center gap-2">
                 <span class="text-sm text-slate-500">展開</span>
-                <input id="bloodToggle" class="peer sr-only" type="checkbox" aria-controls="bloodFields" aria-expanded="false">
-                <span class="h-6 w-11 rounded-full bg-slate-200 after:mt-0.5 after:block after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-blue-600 peer-checked:after:translate-x-5"></span>
+                <input id="bloodToggle" class="peer sr-only" type="checkbox" aria-controls="bloodFields"
+                  aria-expanded="false">
+                <span
+                  class="h-6 w-11 rounded-full bg-slate-200 after:mt-0.5 after:block after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-blue-600 peer-checked:after:translate-x-5"></span>
               </label>
             </div>
             <div id="bloodFields" class="mt-4 hidden grid-cols-2 gap-3 md:grid-cols-3"></div>
-            <button class="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="submit">儲存血液報告</button>
+            <button
+              class="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+              type="submit">儲存血液報告</button>
           </form>
         </div>
       </section>
@@ -167,23 +207,32 @@
           <div class="mt-4 grid gap-3 md:grid-cols-2">
             <label class="block">
               <span class="text-sm font-medium text-slate-500">GAS API URL</span>
-              <input id="gasUrl" class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+              <input id="gasUrl"
+                class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                type="url" placeholder="https://script.google.com/macros/s/.../exec">
             </label>
           </div>
           <p class="mt-3 text-sm text-slate-500">Gemini 請求需透過 Google Apps Script 代理處理，避免金鑰暴露在公開前端。</p>
-          <button id="saveSettings" class="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="button">儲存設定</button>
+          <button id="saveSettings"
+            class="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+            type="button">儲存設定</button>
         </div>
       </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 z-20 grid grid-cols-3 border-t border-slate-200 bg-white md:hidden" aria-label="手機導覽">
+    <nav class="fixed bottom-0 left-0 right-0 z-20 grid grid-cols-3 border-t border-slate-200 bg-white md:hidden"
+      aria-label="手機導覽">
       <button class="mobile-nav active py-3 text-sm font-medium" data-view="dashboard" type="button">首頁</button>
       <button class="mobile-nav py-3 text-sm font-medium text-slate-500" data-view="logs" type="button">紀錄</button>
       <button class="mobile-nav py-3 text-sm font-medium text-slate-500" data-view="settings" type="button">設定</button>
     </nav>
 
-    <button id="chatFab" class="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-lg font-semibold text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20 md:bottom-6" type="button" aria-label="開啟 Gemini 聊天">AI</button>
-    <section id="chatPanel" class="fixed bottom-40 right-4 z-30 hidden h-[400px] w-[320px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-slate-200 bg-white shadow-xl md:bottom-20" aria-label="Gemini 聊天視窗">
+    <button id="chatFab"
+      class="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-lg font-semibold text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20 md:bottom-6"
+      type="button" aria-label="開啟 Gemini 聊天">AI</button>
+    <section id="chatPanel"
+      class="fixed bottom-40 right-4 z-30 hidden h-[400px] w-[320px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-slate-200 bg-white shadow-xl md:bottom-20"
+      aria-label="Gemini 聊天視窗">
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h2 class="text-sm font-semibold text-slate-900">Gemini 助理</h2>
         <button id="closeChat" class="text-sm text-slate-500 hover:text-slate-900" type="button">關閉</button>
@@ -192,8 +241,12 @@
         <div class="rounded-lg bg-slate-50 p-3 text-slate-500">可詢問紀錄摘要。此元件只整理資料，不提供醫療診斷或治療建議。</div>
       </div>
       <form id="chatForm" class="flex gap-2 border-t border-slate-200 p-3">
-        <input id="chatInput" class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10" type="text" placeholder="輸入問題">
-        <button class="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="submit">送出</button>
+        <input id="chatInput"
+          class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+          type="text" placeholder="輸入問題">
+        <button
+          class="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+          type="submit">送出</button>
       </form>
     </section>
   </div>
@@ -203,5 +256,7 @@
   <script src="js/charts.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
+
 </html>
