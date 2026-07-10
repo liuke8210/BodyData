@@ -75,13 +75,13 @@
             label: metric.unit ? `${metric.label} (${metric.unit})` : metric.label,
             data: points.map((point) => point.value),
             borderColor: "#2563eb",
-            backgroundColor: "rgba(37, 99, 235, 0.08)",
+            backgroundColor: "#2563eb",
             borderWidth: 2,
             pointRadius: 3,
             pointHoverRadius: 5,
             pointBackgroundColor: "#2563eb",
-            fill: true,
-            tension: 0.32
+            fill: false,
+            tension: 0
           }
         ]
       },

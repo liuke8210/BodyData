@@ -245,6 +245,7 @@
       hideDashboardStatus();
     }
     renderSummary(data);
+    renderDailyInsight(data);
     renderTodos(data.todos);
     renderChart();
   }
@@ -252,6 +253,7 @@
   function setErrorState(message) {
     setDashboardStatus("error", message || "資料載入失敗");
     renderSummary(state.data);
+    renderDailyInsight(state.data);
     renderTodos(state.data.todos);
     renderChart();
   }
@@ -291,6 +293,155 @@
     blastElement.classList.toggle("font-bold", Number(blast) > 0);
     blastElement.classList.toggle("text-rose-500", Number(blast) > 0);
     document.getElementById("latestBlastDate").textContent = latestBloodReport && latestBloodReport.testDate ? latestBloodReport.testDate : "尚無資料";
+  }
+
+  function renderDailyInsight(data) {
+    const container = document.getElementById("dailyInsightSummary");
+    if (!container) return;
+
+    const metrics = getUniqueDashboardMetrics().filter((metric) => metric.key !== "Blast");
+    const rangeItems = buildRangeInsightItems(data, metrics).slice(0, 5);
+    const changeItems = buildChangeInsightItems(data, metrics).slice(0, 5);
+
+    if (!rangeItems.length && !changeItems.length) {
+      container.className = "mt-4 rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500";
+      container.textContent = "資料量不足，尚無可產生的摘要。";
+      return;
+    }
+
+    container.className = "mt-4 space-y-4 text-sm";
+    container.innerHTML = `
+      ${renderInsightGroup("偏離參考範圍較多", rangeItems, "目前有參考範圍的指標皆在範圍內，或尚無可比對資料。")}
+      ${renderInsightGroup("相較上一筆變化較多", changeItems, "尚無足夠的前後兩筆資料可比對。")}
+    `;
+  }
+
+  function buildRangeInsightItems(data, metrics) {
+    return metrics.map((metric) => {
+      const range = data.normalRanges && data.normalRanges[metric.key];
+      if (!range || (range.normalMin === null && range.normalMax === null)) {
+        return null;
+      }
+
+      const latest = getLatestNumericMetricRow(data[metric.source], metric);
+      if (!latest) return null;
+
+      const value = latest.row[metric.key];
+      const lowDistance = range.normalMin !== null && value < range.normalMin ? range.normalMin - value : 0;
+      const highDistance = range.normalMax !== null && value > range.normalMax ? value - range.normalMax : 0;
+      const distance = Math.max(lowDistance, highDistance);
+      if (distance <= 0) return null;
+
+      const rangeWidth = range.normalMin !== null && range.normalMax !== null
+        ? Math.abs(range.normalMax - range.normalMin)
+        : 0;
+      const score = rangeWidth > 0 ? distance / rangeWidth : distance;
+      const direction = lowDistance > 0 ? "低於參考範圍" : "高於參考範圍";
+      const boundary = lowDistance > 0 ? range.normalMin : range.normalMax;
+      const unit = getMetricUnit(metric, range);
+
+      return {
+        score,
+        label: metric.label,
+        valueText: `${formatInsightNumber(value)}${unit}`,
+        detail: `${direction} ${formatInsightNumber(Math.abs(value - boundary))}${unit}`,
+        date: latest.date
+      };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+  }
+
+  function buildChangeInsightItems(data, metrics) {
+    return metrics.map((metric) => {
+      const rows = getNumericMetricRows(data[metric.source], metric);
+      if (rows.length < 2) return null;
+
+      const latest = rows[rows.length - 1];
+      const previous = rows[rows.length - 2];
+      const diff = latest.value - previous.value;
+      if (diff === 0) return null;
+
+      const score = Math.abs(diff) / Math.max(Math.abs(previous.value), 1);
+      const percent = Math.abs(score * 100);
+      const range = data.normalRanges && data.normalRanges[metric.key];
+      const unit = getMetricUnit(metric, range);
+      const direction = diff > 0 ? "上升" : "下降";
+
+      return {
+        score,
+        label: metric.label,
+        valueText: `${formatInsightNumber(latest.value)}${unit}`,
+        detail: `較上一筆${direction} ${formatInsightNumber(Math.abs(diff))}${unit} (${formatInsightNumber(percent)}%)`,
+        date: latest.date
+      };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+  }
+
+  function renderInsightGroup(title, items, emptyText) {
+    const body = items.length
+      ? `<ol class="mt-2 space-y-2">${items.map(renderInsightItem).join("")}</ol>`
+      : `<p class="mt-2 rounded-md border border-dashed border-slate-200 p-3 text-slate-500">${escapeHtml(emptyText)}</p>`;
+
+    return `
+      <section>
+        <h3 class="text-xs font-semibold text-slate-500">${escapeHtml(title)}</h3>
+        ${body}
+      </section>
+    `;
+  }
+
+  function renderInsightItem(item) {
+    return `
+      <li class="rounded-md border border-slate-200 bg-white px-3 py-2">
+        <div class="flex items-start justify-between gap-3">
+          <span class="font-medium text-slate-900">${escapeHtml(item.label)}</span>
+          <span class="shrink-0 text-xs text-slate-500">${escapeHtml(item.date)}</span>
+        </div>
+        <div class="mt-1 flex items-baseline justify-between gap-3">
+          <span class="text-slate-600">${escapeHtml(item.detail)}</span>
+          <span class="font-semibold text-slate-900">${escapeHtml(item.valueText)}</span>
+        </div>
+      </li>
+    `;
+  }
+
+  function getUniqueDashboardMetrics() {
+    const metrics = window.HealthConfig.METRIC_GROUPS.flatMap((group) => group.metrics);
+    const seen = new Set();
+    return metrics.filter((metric) => {
+      const key = `${metric.source}:${metric.key}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function getLatestNumericMetricRow(rows, metric) {
+    const numericRows = getNumericMetricRows(rows, metric);
+    return numericRows.length ? { row: numericRows[numericRows.length - 1].row, date: numericRows[numericRows.length - 1].date } : null;
+  }
+
+  function getNumericMetricRows(rows, metric) {
+    return (rows || [])
+      .filter((row) => row && row[metric.dateKey] && typeof row[metric.key] === "number" && Number.isFinite(row[metric.key]))
+      .map((row) => ({
+        row,
+        value: row[metric.key],
+        date: row[metric.dateKey]
+      }));
+  }
+
+  function getMetricUnit(metric, range) {
+    const unit = metric.unit || (range && range.unit) || "";
+    return unit ? ` ${unit}` : "";
+  }
+
+  function formatInsightNumber(value) {
+    if (!Number.isFinite(Number(value))) {
+      return "--";
+    }
+    return Number(value).toLocaleString("zh-Hant", {
+      maximumFractionDigits: 2
+    });
   }
 
   function renderTodos(todos) {
@@ -344,7 +495,7 @@
   }
 
   function escapeHtml(value) {
-    return String(value || "")
+    return String(value ?? "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
