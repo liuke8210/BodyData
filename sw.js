@@ -1,4 +1,4 @@
-const CACHE_NAME = "health-dashboard-v3";
+const CACHE_NAME = "health-dashboard-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -34,8 +34,14 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    })
+    fetch(event.request, { cache: "no-store" })
+      .then((networkResponse) => {
+        const responseForCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseForCache);
+        });
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
