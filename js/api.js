@@ -63,6 +63,7 @@
       dailyLogs: normalizeDailyLogs(data.dailyLogs),
       bloodReports: normalizeBloodReports(data.bloodReports),
       todos: normalizeTodos(data.todos),
+      normalRanges: normalizeNormalRanges(data.normalRanges)
     };
   }
 
@@ -101,6 +102,37 @@
       content: normalizeString(row.content),
       status: row.status === "done" ? "done" : "undone"
     }));
+  }
+
+  function normalizeNormalRanges(rows) {
+    const keyAliases = {
+      SBP: "bpSystolic",
+      DBP: "bpDiastolic",
+      "Mature neutrophil": "MatureNeutrophils"
+    };
+
+    return normalizeArray(rows).reduce((ranges, row) => {
+      const rawKey = normalizeString(row.key);
+      const key = keyAliases[rawKey] || rawKey;
+      if (!key) {
+        return ranges;
+      }
+
+      const normalMin = normalizeNumber(row.normalMin);
+      const normalMax = normalizeNumber(row.normalMax);
+      if (normalMin === null && normalMax === null) {
+        return ranges;
+      }
+
+      ranges[key] = {
+        key,
+        label: normalizeString(row.label) || key,
+        normalMin,
+        normalMax,
+        unit: normalizeString(row.unit || row.Unit)
+      };
+      return ranges;
+    }, {});
   }
 
   function normalizeArray(value) {

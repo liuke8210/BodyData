@@ -1,7 +1,8 @@
 const SHEETS = {
   dailyLogs: "DailyLogs",
   bloodReports: "BloodReports",
-  todos: "TodoList"
+  todos: "TodoList",
+  config: "Config"
 };
 
 const HEADERS = {
@@ -59,7 +60,8 @@ function getDashboardData() {
   return {
     dailyLogs: readRecords(SHEETS.dailyLogs),
     bloodReports: readRecords(SHEETS.bloodReports),
-    todos: readRecords(SHEETS.todos)
+    todos: readRecords(SHEETS.todos),
+    normalRanges: readRecords(SHEETS.config)
   };
 }
 

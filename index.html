@@ -50,49 +50,88 @@
       <section id="dashboardView" class="view space-y-5">
         <div id="dashboardStatus" class="hidden rounded-md border px-4 py-3 text-sm"></div>
 
-        <section class="grid grid-cols-3 gap-3 md:grid-cols-[15fr_15fr_15fr_55fr]" aria-label="摘要">
-          <article class="rounded-lg border border-slate-200 bg-white p-4">
-            <p class="text-xs font-medium text-slate-500">最新體重</p>
-            <div class="mt-2 flex items-end gap-1">
-              <span id="latestWeight" class="text-2xl font-semibold">--</span>
-              <span class="pb-1 text-xs text-slate-500">kg</span>
+        <div class="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.9fr)] lg:items-start">
+          <section class="hidden rounded-lg border border-slate-200 bg-white p-4 lg:col-start-1 lg:row-start-1 lg:block">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h2 class="text-base font-semibold text-slate-900">今日重點摘要</h2>
+                <p class="mt-1 text-sm text-slate-500">依最新資料整理需要留意的數值變化</p>
+              </div>
+              <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-700">每日</span>
             </div>
-            <p id="latestWeightDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
-          </article>
-
-          <article class="rounded-lg border border-slate-200 bg-white p-4">
-            <p class="text-xs font-medium text-slate-500">最新血壓</p>
-            <div class="mt-2 flex items-end gap-1">
-              <span id="latestBloodPressure" class="text-2xl font-semibold">--</span>
-              <span class="pb-1 text-xs text-slate-500">mmHg</span>
+            <div id="dailyInsightSummary" class="mt-4 rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">
+              尚未產生今日摘要
             </div>
-            <p id="latestBloodPressureDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
-          </article>
+          </section>
 
-          <article class="rounded-lg border border-slate-200 bg-white p-4">
-            <p class="text-xs font-medium text-slate-500">最新 Blast</p>
-            <div class="mt-2 flex items-end gap-1">
-              <span id="latestBlast" class="text-2xl font-semibold">--</span>
-              <span class="pb-1 text-xs text-slate-500">%</span>
-            </div>
-            <p id="latestBlastDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
-          </article>
+          <section class="grid grid-cols-3 gap-3 lg:col-start-2 lg:row-start-1 lg:grid-cols-2" aria-label="最新數值">
+            <article class="rounded-lg border border-slate-200 bg-white p-4 lg:p-3">
+              <p class="text-xs font-medium text-slate-500">最新體重</p>
+              <div class="mt-2 flex items-end gap-1">
+                <span id="latestWeight" class="text-2xl font-semibold lg:text-xl">--</span>
+                <span class="pb-1 text-xs text-slate-500">kg</span>
+              </div>
+              <p id="latestWeightDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
+            </article>
 
-          <article class="col-span-3 rounded-lg border border-slate-200 bg-white p-4 md:col-span-1">
-            <label for="quickTodo" class="text-xs font-medium text-slate-500">新增待辦</label>
-            <form id="quickTodoForm" class="mt-2 flex gap-2">
-              <input id="quickTodo"
-                class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
-                type="text" placeholder="輸入要追蹤的事項">
-              <button
-                class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                type="submit">新增</button>
-            </form>
-          </article>
-        </section>
+            <article class="rounded-lg border border-slate-200 bg-white p-4 lg:p-3">
+              <p class="text-xs font-medium text-slate-500">收縮壓</p>
+              <div class="mt-2 flex items-end gap-1">
+                <span id="latestBpSystolic" class="text-2xl font-semibold lg:text-xl">--</span>
+                <span class="pb-1 text-xs text-slate-500">mmHg</span>
+              </div>
+              <p id="latestBpSystolicDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
+            </article>
 
-        <div class="flex flex-col gap-5 lg:grid lg:grid-cols-3">
-          <section class="order-2 rounded-lg border border-slate-200 bg-white p-4 lg:order-1 lg:col-span-2">
+            <article class="rounded-lg border border-slate-200 bg-white p-4 lg:p-3">
+              <p class="text-xs font-medium text-slate-500">舒張壓</p>
+              <div class="mt-2 flex items-end gap-1">
+                <span id="latestBpDiastolic" class="text-2xl font-semibold lg:text-xl">--</span>
+                <span class="pb-1 text-xs text-slate-500">mmHg</span>
+              </div>
+              <p id="latestBpDiastolicDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
+            </article>
+
+            <article class="rounded-lg border border-slate-200 bg-white p-4 lg:p-3">
+              <p class="text-xs font-medium text-slate-500">最新 Blast</p>
+              <div class="mt-2 flex items-end gap-1">
+                <span id="latestBlast" class="text-2xl font-semibold lg:text-xl">--</span>
+                <span class="pb-1 text-xs text-slate-500">%</span>
+              </div>
+              <p id="latestBlastDate" class="mt-2 text-xs text-slate-500">尚無資料</p>
+            </article>
+          </section>
+
+          <div class="order-1 space-y-5 lg:order-none lg:col-start-2 lg:row-start-2">
+            <section class="rounded-lg border border-slate-200 bg-white p-4">
+              <label for="quickTodo" class="text-xs font-medium text-slate-500">新增待辦</label>
+              <form id="quickTodoForm" class="mt-2 flex gap-2">
+                <input id="quickTodo"
+                  class="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[16px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+                  type="text" placeholder="輸入要追蹤的事項">
+                <button
+                  class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                  type="submit">新增</button>
+              </form>
+            </section>
+
+            <section class="rounded-lg border border-slate-200 bg-white p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h2 class="text-base font-semibold text-slate-900">任務清單</h2>
+                  <span id="todoCount" class="text-xs text-slate-500">0 undone</span>
+                </div>
+                <button id="deleteDoneTodos"
+                  class="rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="button" disabled>刪除已完成</button>
+              </div>
+              <ul id="todoList" class="space-y-2"></ul>
+              <p id="todoEmptyState"
+                class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無待辦事項</p>
+            </section>
+          </div>
+
+          <section class="order-2 rounded-lg border border-slate-200 bg-white p-4 lg:order-none lg:col-start-1 lg:row-start-2">
             <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 class="text-base font-semibold text-slate-900">歷史趨勢圖</h2>
@@ -111,23 +150,6 @@
               <canvas id="trendChart" aria-label="歷史趨勢圖"></canvas>
             </div>
           </section>
-
-          <div class="order-1 space-y-5 lg:order-2">
-            <section class="rounded-lg border border-slate-200 bg-white p-4">
-              <div class="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <h2 class="text-base font-semibold text-slate-900">任務清單</h2>
-                  <span id="todoCount" class="text-xs text-slate-500">0 undone</span>
-                </div>
-                <button id="deleteDoneTodos"
-                  class="rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  type="button" disabled>刪除已完成</button>
-              </div>
-              <ul id="todoList" class="space-y-2"></ul>
-              <p id="todoEmptyState"
-                class="hidden rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">尚無待辦事項</p>
-            </section>
-          </div>
         </div>
       </section>
 
@@ -211,6 +233,20 @@
       <button class="mobile-nav py-3 text-sm font-medium text-slate-500" data-view="logs" type="button">紀錄</button>
       <button class="mobile-nav py-3 text-sm font-medium text-slate-500" data-view="settings" type="button">設定</button>
     </nav>
+
+    <section id="confirmDialog" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 px-4" role="dialog" aria-modal="true" aria-labelledby="confirmDialogTitle">
+      <div class="w-full max-w-md rounded-lg border border-slate-200 bg-white shadow-xl">
+        <div class="border-b border-slate-200 px-4 py-3">
+          <h2 id="confirmDialogTitle" class="text-base font-semibold text-slate-900">確認資料</h2>
+          <p id="confirmDialogDescription" class="mt-1 text-sm text-slate-500">請確認以下資料是否正確。</p>
+        </div>
+        <div id="confirmDialogContent" class="max-h-[60vh] overflow-y-auto px-4 py-3 text-sm"></div>
+        <div class="flex justify-end gap-2 border-t border-slate-200 px-4 py-3">
+          <button id="cancelConfirmDialog" class="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50" type="button">取消</button>
+          <button id="acceptConfirmDialog" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="button">確認儲存</button>
+        </div>
+      </div>
+    </section>
 
   </div>
 

@@ -39,12 +39,23 @@
 | 任務內容 | `content` | 文字 |
 | 狀態 | `status` | `done` 或 `undone` |
 
+## Config
+
+| 欄位名稱 | Key | 說明 |
+|---|---|---|
+| 指標 Key | `key` | 對應前端指標 key，可用 `SBP`、`DBP`、`Mature neutrophil` 作為別名 |
+| 顯示名稱 | `label` | 指標顯示名稱 |
+| 正常下限 | `normalMin` | 數值，可空白 |
+| 正常上限 | `normalMax` | 數值，可空白 |
+| 單位 | `Unit` | 指標單位，可空白 |
+
 ## Dashboard Response
 
 ```json
 {
   "dailyLogs": [],
   "bloodReports": [],
-  "todos": []
+  "todos": [],
+  "normalRanges": []
 }
 ```

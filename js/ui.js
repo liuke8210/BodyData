@@ -3,7 +3,8 @@
     data: {
       dailyLogs: [],
       bloodReports: [],
-      todos: []
+      todos: [],
+      normalRanges: {}
     },
     onRefresh: null
   };
@@ -75,6 +76,8 @@
     document.getElementById("dailyLogForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const payload = HealthApi.buildDailyLogPayload(event.currentTarget);
+      const didConfirm = await confirmPayload("確認每日基本紀錄", buildDailyLogConfirmationRows(payload));
+      if (!didConfirm) return;
       const didSave = await submitApiAction(HealthApi.ACTIONS.createDailyLog, payload, "每日紀錄已新增到 Google Sheet", event.submitter);
       if (didSave) {
         event.currentTarget.reset();
@@ -84,11 +87,87 @@
     document.getElementById("bloodReportForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const payload = HealthApi.buildBloodReportPayload(event.currentTarget);
+      const didConfirm = await confirmPayload("確認專業血液報告", buildBloodReportConfirmationRows(payload));
+      if (!didConfirm) return;
       const didSave = await submitApiAction(HealthApi.ACTIONS.createBloodReport, payload, "血液報告已新增到 Google Sheet", event.submitter);
       if (didSave) {
         event.currentTarget.reset();
       }
     });
+  }
+
+  function buildDailyLogConfirmationRows(payload) {
+    return [
+      { label: "日期", value: payload.date },
+      { label: "體重", value: payload.weight, unit: "kg" },
+      { label: "收縮壓", value: payload.bpSystolic, unit: "mmHg" },
+      { label: "舒張壓", value: payload.bpDiastolic, unit: "mmHg" },
+      { label: "備註", value: payload.notes }
+    ];
+  }
+
+  function buildBloodReportConfirmationRows(payload) {
+    const rows = [
+      { label: "檢驗日期", value: payload.testDate }
+    ];
+
+    window.HealthConfig.BLOOD_REPORT_FIELDS.forEach((field) => {
+      rows.push({ label: field.label, value: payload[field.key] });
+    });
+
+    return rows;
+  }
+
+  function confirmPayload(title, rows) {
+    return new Promise((resolve) => {
+      const dialog = document.getElementById("confirmDialog");
+      const titleElement = document.getElementById("confirmDialogTitle");
+      const content = document.getElementById("confirmDialogContent");
+      const cancelButton = document.getElementById("cancelConfirmDialog");
+      const acceptButton = document.getElementById("acceptConfirmDialog");
+
+      titleElement.textContent = title;
+      content.innerHTML = rows.map((row) => {
+        const value = formatConfirmationValue(row.value, row.unit);
+        return `
+          <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0">
+            <span class="text-slate-500">${escapeHtml(row.label)}</span>
+            <span class="max-w-[60%] text-right font-medium text-slate-900">${escapeHtml(value)}</span>
+          </div>
+        `;
+      }).join("");
+
+      const cleanup = (result) => {
+        dialog.classList.add("hidden");
+        dialog.classList.remove("flex");
+        cancelButton.removeEventListener("click", onCancel);
+        acceptButton.removeEventListener("click", onAccept);
+        document.removeEventListener("keydown", onKeydown);
+        resolve(result);
+      };
+
+      const onCancel = () => cleanup(false);
+      const onAccept = () => cleanup(true);
+      const onKeydown = (event) => {
+        if (event.key === "Escape") {
+          cleanup(false);
+        }
+      };
+
+      cancelButton.addEventListener("click", onCancel);
+      acceptButton.addEventListener("click", onAccept);
+      document.addEventListener("keydown", onKeydown);
+      dialog.classList.remove("hidden");
+      dialog.classList.add("flex");
+      acceptButton.focus();
+    });
+  }
+
+  function formatConfirmationValue(value, unit) {
+    if (value === null || value === undefined || value === "") {
+      return "未填寫";
+    }
+    return unit ? `${value} ${unit}` : String(value);
   }
 
   async function submitApiAction(action, payload, successMessage, submitButton) {
@@ -201,11 +280,10 @@
     document.getElementById("latestWeight").textContent = formatNullableNumber(latestDailyLog && latestDailyLog.weight);
     document.getElementById("latestWeightDate").textContent = latestDailyLog && latestDailyLog.date ? latestDailyLog.date : "尚無資料";
 
-    const pressure = latestDailyLog && latestDailyLog.bpSystolic !== null && latestDailyLog.bpDiastolic !== null
-      ? `${latestDailyLog.bpSystolic}/${latestDailyLog.bpDiastolic}`
-      : "--";
-    document.getElementById("latestBloodPressure").textContent = pressure;
-    document.getElementById("latestBloodPressureDate").textContent = latestDailyLog && latestDailyLog.date ? latestDailyLog.date : "尚無資料";
+    document.getElementById("latestBpSystolic").textContent = formatNullableNumber(latestDailyLog && latestDailyLog.bpSystolic);
+    document.getElementById("latestBpSystolicDate").textContent = latestDailyLog && latestDailyLog.date ? latestDailyLog.date : "尚無資料";
+    document.getElementById("latestBpDiastolic").textContent = formatNullableNumber(latestDailyLog && latestDailyLog.bpDiastolic);
+    document.getElementById("latestBpDiastolicDate").textContent = latestDailyLog && latestDailyLog.date ? latestDailyLog.date : "尚無資料";
 
     const blast = latestBloodReport ? latestBloodReport.Blast : null;
     const blastElement = document.getElementById("latestBlast");
