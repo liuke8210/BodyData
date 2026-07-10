@@ -40,8 +40,9 @@ function doPost(event) {
       updateTodoStatus(payload.taskId, payload.status);
       return jsonResponse({ ok: true });
     }
-    if (action === "chatWithGemini") {
-      return jsonResponse({ ok: true, data: { reply: "Gemini 代理尚未設定。請在 Apps Script 中加入 Gemini API 呼叫邏輯。" } });
+    if (action === "deleteCompletedTodos") {
+      const deletedCount = deleteCompletedTodos();
+      return jsonResponse({ ok: true, data: { deletedCount } });
     }
 
     throw new Error("Unknown action");
@@ -58,8 +59,7 @@ function getDashboardData() {
   return {
     dailyLogs: readRecords(SHEETS.dailyLogs),
     bloodReports: readRecords(SHEETS.bloodReports),
-    todos: readRecords(SHEETS.todos),
-    schedule: []
+    todos: readRecords(SHEETS.todos)
   };
 }
 
@@ -137,6 +137,30 @@ function updateTodoStatus(taskId, status) {
   }
 
   throw new Error("Todo not found");
+}
+
+function deleteCompletedTodos() {
+  const sheet = getSheet(SHEETS.todos);
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) {
+    return 0;
+  }
+
+  const headers = values[0].map(String);
+  const statusIndex = headers.indexOf("status");
+  if (statusIndex < 0) {
+    throw new Error("TodoList headers are invalid");
+  }
+
+  let deletedCount = 0;
+  for (let rowIndex = values.length - 1; rowIndex >= 1; rowIndex -= 1) {
+    if (String(values[rowIndex][statusIndex]) === "done") {
+      sheet.deleteRow(rowIndex + 1);
+      deletedCount += 1;
+    }
+  }
+
+  return deletedCount;
 }
 
 function normalizeCell(value) {

@@ -45,7 +45,6 @@
 {
   "dailyLogs": [],
   "bloodReports": [],
-  "todos": [],
-  "schedule": []
+  "todos": []
 }
 ```

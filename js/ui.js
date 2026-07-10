@@ -3,8 +3,7 @@
     data: {
       dailyLogs: [],
       bloodReports: [],
-      todos: [],
-      schedule: []
+      todos: []
     },
     onRefresh: null
   };
@@ -23,7 +22,6 @@
     setupNavigation();
     setupSettings();
     setupForms();
-    setupChat();
   }
 
   function setupNavigation() {
@@ -68,11 +66,10 @@
       }
     });
 
-    document.getElementById("bloodToggle").addEventListener("change", (event) => {
-      const fields = document.getElementById("bloodFields");
-      fields.classList.toggle("hidden", !event.target.checked);
-      fields.classList.toggle("grid", event.target.checked);
-      event.target.setAttribute("aria-expanded", String(event.target.checked));
+    document.getElementById("deleteDoneTodos").addEventListener("click", async (event) => {
+      const doneCount = state.data.todos.filter((todo) => todo.status === "done").length;
+      if (!doneCount) return;
+      await submitApiAction(HealthApi.ACTIONS.deleteCompletedTodos, {}, `已刪除 ${doneCount} 個已完成任務`, event.currentTarget);
     });
 
     document.getElementById("dailyLogForm").addEventListener("submit", async (event) => {
@@ -90,8 +87,6 @@
       const didSave = await submitApiAction(HealthApi.ACTIONS.createBloodReport, payload, "血液報告已新增到 Google Sheet", event.submitter);
       if (didSave) {
         event.currentTarget.reset();
-        document.getElementById("bloodToggle").checked = false;
-        document.getElementById("bloodToggle").dispatchEvent(new Event("change"));
       }
     });
   }
@@ -172,7 +167,6 @@
     }
     renderSummary(data);
     renderTodos(data.todos);
-    renderSchedule(data.schedule);
     renderChart();
   }
 
@@ -180,7 +174,6 @@
     setDashboardStatus("error", message || "資料載入失敗");
     renderSummary(state.data);
     renderTodos(state.data.todos);
-    renderSchedule(state.data.schedule);
     renderChart();
   }
 
@@ -226,7 +219,9 @@
     const list = document.getElementById("todoList");
     const emptyState = document.getElementById("todoEmptyState");
     const openTodos = todos.filter((todo) => todo.status !== "done");
+    const doneTodos = todos.filter((todo) => todo.status === "done");
     document.getElementById("todoCount").textContent = `${openTodos.length} undone`;
+    document.getElementById("deleteDoneTodos").disabled = doneTodos.length === 0;
     list.innerHTML = "";
     emptyState.classList.toggle("hidden", todos.length > 0);
 
@@ -247,80 +242,11 @@
     });
   }
 
-  function renderSchedule(schedule) {
-    const list = document.getElementById("scheduleList");
-    const emptyState = document.getElementById("scheduleEmptyState");
-    list.innerHTML = "";
-    emptyState.classList.toggle("hidden", schedule.length > 0);
-
-    schedule.forEach((item) => {
-      const row = document.createElement("div");
-      row.className = "flex items-center justify-between gap-3 border-b border-slate-200 pb-3 last:border-b-0 last:pb-0";
-      row.innerHTML = `
-        <div>
-          <p class="text-sm font-medium text-slate-900">${escapeHtml(item.title || "未命名行程")}</p>
-          <p class="text-xs text-slate-500">${escapeHtml(item.date || "")}</p>
-        </div>
-        <span class="text-xs text-slate-500">${escapeHtml(item.status || "")}</span>
-      `;
-      list.appendChild(row);
-    });
-  }
-
   function renderChart() {
     const select = document.getElementById("metricSelect");
     const hasChart = HealthCharts.renderTrendChart(document.getElementById("trendChart"), state.data, select.value);
     document.getElementById("chartEmptyState").classList.toggle("hidden", hasChart);
     document.getElementById("chartFrame").classList.toggle("hidden", !hasChart);
-  }
-
-  function setupChat() {
-    const fab = document.getElementById("chatFab");
-    const panel = document.getElementById("chatPanel");
-
-    fab.addEventListener("click", () => {
-      panel.classList.toggle("hidden");
-      panel.classList.toggle("flex");
-    });
-
-    document.getElementById("closeChat").addEventListener("click", () => {
-      panel.classList.add("hidden");
-      panel.classList.remove("flex");
-    });
-
-    document.getElementById("chatForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const input = document.getElementById("chatInput");
-      const message = input.value.trim();
-      if (!message) return;
-
-      appendChatMessage(message, "user");
-      input.value = "";
-
-      if (!HealthApi.hasGasUrl()) {
-        appendChatMessage("尚未設定 GAS API URL。Gemini 請求需透過後端代理，避免金鑰暴露在公開前端。", "ai");
-        return;
-      }
-
-      try {
-        const result = await HealthApi.request(HealthApi.ACTIONS.chatWithGemini, {
-          message,
-          context: state.data
-        });
-        appendChatMessage(result.reply || "目前沒有可顯示的回覆。", "ai");
-      } catch (error) {
-        appendChatMessage(error.message || "Gemini 代理請求失敗。", "ai");
-      }
-    });
-  }
-
-  function appendChatMessage(message, role) {
-    const messages = document.getElementById("chatMessages");
-    const bubble = document.createElement("div");
-    bubble.className = role === "user" ? "chat-bubble-user" : "chat-bubble-ai";
-    bubble.textContent = message;
-    messages.appendChild(bubble);
-    messages.scrollTop = messages.scrollHeight;
   }
 
   function showToast(message) {

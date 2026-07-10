@@ -63,7 +63,6 @@
       dailyLogs: normalizeDailyLogs(data.dailyLogs),
       bloodReports: normalizeBloodReports(data.bloodReports),
       todos: normalizeTodos(data.todos),
-      schedule: Array.isArray(data.schedule) ? data.schedule.map(normalizeScheduleItem) : []
     };
   }
 
@@ -102,14 +101,6 @@
       content: normalizeString(row.content),
       status: row.status === "done" ? "done" : "undone"
     }));
-  }
-
-  function normalizeScheduleItem(row) {
-    return {
-      date: normalizeString(row.date || row.day),
-      title: normalizeString(row.title || row.content),
-      status: normalizeString(row.status)
-    };
   }
 
   function normalizeArray(value) {

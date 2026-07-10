@@ -59,7 +59,7 @@
     createBloodReport: "createBloodReport",
     createTodo: "createTodo",
     updateTodoStatus: "updateTodoStatus",
-    chatWithGemini: "chatWithGemini"
+    deleteCompletedTodos: "deleteCompletedTodos"
   };
 
   window.HealthConfig = {

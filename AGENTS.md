@@ -18,7 +18,6 @@
 - 圖表：Chart.js CDN。
 - 樣式：Tailwind CSS。
 - 互動邏輯：Vanilla JavaScript。
-- AI 聊天：Gemini API 必須透過後端代理，避免金鑰暴露在前端。
 
 ## 不可違反的規則
 
@@ -75,10 +74,9 @@
 - Dashboard 摘要卡桌面版 grid 比例為 `15fr 15fr 15fr 55fr`。
 - 摘要卡依序顯示最新體重、最新血壓、最新 Blast、新增待辦。
 - `Blast > 0` 時必須顯示為 `font-bold text-rose-500`。
-- 手機版 Dashboard 順序為任務清單、近 7 日行程、歷史趨勢圖。
+- 手機版 Dashboard 順序為任務清單、歷史趨勢圖。
 - 身體素質紀錄頁使用每日基本紀錄與可收合的專業血液報告雙卡片。
 - 血液報告展開後欄位使用 `grid-cols-2 md:grid-cols-3`。
-- 全局 Gemini 聊天使用右下角 FAB，手機版不得遮住底部導覽。
 
 ## 資料表
 
